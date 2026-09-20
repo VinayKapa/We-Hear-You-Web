@@ -133,12 +133,12 @@ export const DocumentAssistant: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         
         {/* Left Column: Document Text & Query (7 cols) */}
-        <div className="lg:col-span-7 bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
+        <div className="lg:col-span-7 bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-4 transition-colors">
           <div className="flex items-center justify-between">
-            <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wide">
+            <label className="text-xs font-extrabold text-slate-800 dark:text-slate-200 uppercase tracking-wide">
               Document Text / Official Circular
             </label>
-            <span className="text-[11px] text-slate-400 font-medium">
+            <span className="text-[11px] text-slate-400 dark:text-slate-500 font-medium">
               {documentText.length} characters
             </span>
           </div>
@@ -148,12 +148,12 @@ export const DocumentAssistant: React.FC = () => {
             onChange={(e) => setDocumentText(e.target.value)}
             rows={8}
             placeholder="Paste notice, prescription, or official circular text..."
-            className="w-full text-xs sm:text-sm p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-sky-500 focus:bg-white text-slate-900 leading-relaxed font-mono"
+            className="w-full text-xs sm:text-sm p-4 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-sky-500 focus:bg-white dark:focus:bg-slate-950 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 leading-relaxed font-mono"
           />
 
           {/* Question / Inquiry Input */}
           <div className="space-y-2 pt-2">
-            <label className="text-xs font-bold text-slate-700">
+            <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
               What would you like to know or clarify?
             </label>
             <div className="flex items-center gap-2">
@@ -163,12 +163,12 @@ export const DocumentAssistant: React.FC = () => {
                 onChange={(e) => setQuestion(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleAnalyzeDocument()}
                 placeholder="e.g. When is the deadline? What is the dosage? Where is platform 12?"
-                className="flex-1 text-xs sm:text-sm p-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500 focus:bg-white text-slate-900"
+                className="flex-1 text-xs sm:text-sm p-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500 focus:bg-white dark:focus:bg-slate-950 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500"
               />
               <button
                 onClick={() => handleAnalyzeDocument()}
                 disabled={isLoading || !documentText.trim()}
-                className="flex items-center gap-2 bg-sky-600 hover:bg-sky-500 disabled:opacity-40 text-white px-5 py-3 rounded-xl text-xs font-bold transition shadow-sm active:scale-95"
+                className="flex items-center gap-2 bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 disabled:opacity-40 text-white px-5 py-3 rounded-xl text-xs font-bold transition shadow-sm active:scale-95 cursor-pointer"
               >
                 {isLoading ? (
                   <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -184,12 +184,12 @@ export const DocumentAssistant: React.FC = () => {
 
           {/* Answer Card */}
           {result && (
-            <div className="mt-6 pt-4 border-t border-slate-100 space-y-4">
-              <div className="bg-sky-50/80 p-4 rounded-2xl border border-sky-100 space-y-2">
-                <span className="text-[11px] font-extrabold uppercase tracking-wider text-sky-900 block">
+            <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800 space-y-4">
+              <div className="bg-sky-50/80 dark:bg-sky-950/40 p-4 rounded-2xl border border-sky-100 dark:border-sky-900/50 space-y-2">
+                <span className="text-[11px] font-extrabold uppercase tracking-wider text-sky-900 dark:text-sky-300 block">
                   Plain-Language Clarification
                 </span>
-                <p className="text-xs sm:text-sm font-semibold text-slate-900 leading-relaxed">
+                <p className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-slate-100 leading-relaxed">
                   {result.answer}
                 </p>
               </div>
@@ -197,16 +197,16 @@ export const DocumentAssistant: React.FC = () => {
               {/* Crucial Highlights */}
               {result.importantHighlights?.length > 0 && (
                 <div className="space-y-2">
-                  <span className="text-xs font-extrabold uppercase tracking-wide text-slate-700 block">
+                  <span className="text-xs font-extrabold uppercase tracking-wide text-slate-700 dark:text-slate-300 block">
                     Important Action Items
                   </span>
                   <div className="space-y-1.5">
                     {result.importantHighlights.map((hl, i) => (
                       <div
                         key={i}
-                        className="flex items-start gap-2 bg-slate-50 p-2.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-800"
+                        className="flex items-start gap-2 bg-slate-50 dark:bg-slate-800/60 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700/60 text-xs font-medium text-slate-800 dark:text-slate-200"
                       >
-                        <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                        <CheckCircle className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
                         <span>{hl}</span>
                       </div>
                     ))}
@@ -217,7 +217,7 @@ export const DocumentAssistant: React.FC = () => {
               {/* Suggested Follow-Up Questions */}
               {result.suggestedFollowUps?.length > 0 && (
                 <div className="pt-2">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-2">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 block mb-2">
                     Suggested Inquiries:
                   </span>
                   <div className="flex flex-wrap gap-2">
@@ -228,7 +228,7 @@ export const DocumentAssistant: React.FC = () => {
                           setQuestion(fu);
                           handleAnalyzeDocument(fu);
                         }}
-                        className="text-xs font-medium bg-slate-100 hover:bg-sky-50 hover:text-sky-700 text-slate-700 px-3 py-1.5 rounded-xl border border-slate-200 transition"
+                        className="text-xs font-medium bg-slate-100 dark:bg-slate-800 hover:bg-sky-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 hover:text-sky-700 dark:hover:text-sky-300 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 transition cursor-pointer active:scale-95"
                       >
                         {fu}
                       </button>

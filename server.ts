@@ -884,7 +884,7 @@ Execution Tasks:
     let contentsPayload: any = [{ text: promptText }];
 
     if (pdfBase64) {
-      const cleanBase64 = pdfBase64.replace(/^data:application\/pdf;base64,/, "");
+      const cleanBase64 = pdfBase64.includes(",") ? pdfBase64.split(",")[1] : pdfBase64;
       contentsPayload = [
         {
           inlineData: {
@@ -895,8 +895,9 @@ Execution Tasks:
         { text: promptText },
       ];
     } else if (imageBase64) {
-      const mime = mediaMimeType || (imageBase64.startsWith("data:image/png") ? "image/png" : "image/jpeg");
-      const cleanBase64 = imageBase64.replace(/^data:image\/[a-zA-Z]+;base64,/, "");
+      const detectedMime = imageBase64.match(/^data:([^;]+);/)?.[1]?.split(";")[0] || "image/jpeg";
+      const mime = (mediaMimeType ? mediaMimeType.split(";")[0] : detectedMime) || "image/jpeg";
+      const cleanBase64 = imageBase64.includes(",") ? imageBase64.split(",")[1] : imageBase64;
       contentsPayload = [
         {
           inlineData: {
@@ -907,8 +908,14 @@ Execution Tasks:
         { text: promptText },
       ];
     } else if (audioBase64) {
-      const mime = mediaMimeType || "audio/mp3";
-      const cleanBase64 = audioBase64.replace(/^data:audio\/[a-zA-Z0-9]+;base64,/, "");
+      const detectedMime = audioBase64.match(/^data:([^;]+);/)?.[1]?.split(";")[0] || "audio/webm";
+      let mime = (mediaMimeType ? mediaMimeType.split(";")[0] : detectedMime) || "audio/webm";
+      if (mime.includes("webm")) mime = "audio/webm";
+      else if (mime.includes("wav")) mime = "audio/wav";
+      else if (mime.includes("mp3") || mime.includes("mpeg")) mime = "audio/mp3";
+      else if (mime.includes("ogg")) mime = "audio/ogg";
+      else if (mime.includes("m4a") || mime.includes("mp4") || mime.includes("aac")) mime = "audio/mp4";
+      const cleanBase64 = audioBase64.includes(",") ? audioBase64.split(",")[1] : audioBase64;
       contentsPayload = [
         {
           inlineData: {
@@ -919,8 +926,9 @@ Execution Tasks:
         { text: promptText },
       ];
     } else if (videoBase64) {
-      const mime = mediaMimeType || "video/mp4";
-      const cleanBase64 = videoBase64.replace(/^data:video\/[a-zA-Z0-9]+;base64,/, "");
+      const detectedMime = videoBase64.match(/^data:([^;]+);/)?.[1]?.split(";")[0] || "video/mp4";
+      const mime = (mediaMimeType ? mediaMimeType.split(";")[0] : detectedMime) || "video/mp4";
+      const cleanBase64 = videoBase64.includes(",") ? videoBase64.split(",")[1] : videoBase64;
       contentsPayload = [
         {
           inlineData: {
@@ -1353,6 +1361,9 @@ function generateFallbackConversation(speakerType: string, message: string) {
 
 // Start Server and mount Vite
 async function startServer() {
+  // Serve static assets from public folder (e.g. 3D models)
+  app.use(express.static(path.join(process.cwd(), "public")));
+
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
       server: { middlewareMode: true },

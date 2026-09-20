@@ -163,22 +163,22 @@ export const LearnISL: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         
         {/* Left Column */}
-        <div className="lg:col-span-7 bg-white rounded-3xl p-6 border border-slate-200 shadow-sm">
+        <div className="lg:col-span-7 bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-sm transition-colors">
           
           {activeCategory === 'quiz' && (
             <div className="space-y-5">
               {!quizFinished ? (
                 <>
-                  <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-                    <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+                  <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+                    <span className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
                       Question {currentQuizIdx + 1} of {QUIZ_QUESTIONS.length}
                     </span>
-                    <span className="text-xs font-black text-sky-600 bg-sky-50 px-2.5 py-1 rounded-full">
+                    <span className="text-xs font-black text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/60 px-2.5 py-1 rounded-full border border-sky-100 dark:border-sky-900/50">
                       Score: {score}
                     </span>
                   </div>
 
-                  <h3 className="text-base sm:text-lg font-black text-slate-900 leading-snug">
+                  <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white leading-snug">
                     {currentQ.question}
                   </h3>
 
@@ -187,15 +187,15 @@ export const LearnISL: React.FC = () => {
                     {currentQ.options.map((opt, i) => {
                       const isChosen = selectedOption === i;
                       const isCorrect = i === currentQ.correctIndex;
-                      let btnStyle = 'bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-800';
+                      let btnStyle = 'bg-slate-50 dark:bg-slate-800/60 hover:bg-slate-100 dark:hover:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200';
 
                       if (selectedOption !== null) {
                         if (isCorrect) {
-                          btnStyle = 'bg-emerald-50 border-emerald-400 text-emerald-950 font-bold';
+                          btnStyle = 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-400 dark:border-emerald-600 text-emerald-950 dark:text-emerald-200 font-bold';
                         } else if (isChosen) {
-                          btnStyle = 'bg-rose-50 border-rose-400 text-rose-950';
+                          btnStyle = 'bg-rose-50 dark:bg-rose-950/40 border-rose-400 dark:border-rose-600 text-rose-950 dark:text-rose-200';
                         } else {
-                          btnStyle = 'bg-slate-50 opacity-60 border-slate-200';
+                          btnStyle = 'bg-slate-50 dark:bg-slate-800/30 opacity-50 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400';
                         }
                       }
 
@@ -204,14 +204,14 @@ export const LearnISL: React.FC = () => {
                           key={i}
                           onClick={() => handleSelectOption(i)}
                           disabled={selectedOption !== null}
-                          className={`w-full p-3.5 rounded-2xl text-xs sm:text-sm font-semibold text-left border-2 transition-all flex items-center justify-between ${btnStyle}`}
+                          className={`w-full p-3.5 rounded-2xl text-xs sm:text-sm font-semibold text-left border-2 transition-all flex items-center justify-between cursor-pointer ${btnStyle}`}
                         >
                           <span>{opt}</span>
                           {selectedOption !== null && isCorrect && (
-                            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 ml-2" />
+                            <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 ml-2" />
                           )}
                           {selectedOption !== null && isChosen && !isCorrect && (
-                            <XCircle className="w-4 h-4 text-rose-600 shrink-0 ml-2" />
+                            <XCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0 ml-2" />
                           )}
                         </button>
                       );
@@ -221,8 +221,8 @@ export const LearnISL: React.FC = () => {
                   {/* Explanation & Next */}
                   {selectedOption !== null && (
                     <div className="pt-3 space-y-3">
-                      <div className="p-3.5 bg-sky-50 rounded-2xl border border-sky-100 text-xs text-sky-950 font-medium leading-relaxed">
-                        <span className="font-extrabold text-sky-900 block mb-1">
+                      <div className="p-3.5 bg-sky-50 dark:bg-sky-950/40 rounded-2xl border border-sky-100 dark:border-sky-900/50 text-xs text-sky-950 dark:text-sky-200 font-medium leading-relaxed">
+                        <span className="font-extrabold text-sky-900 dark:text-sky-300 block mb-1">
                           Explanation:
                         </span>
                         {currentQ.explanation}
@@ -230,7 +230,7 @@ export const LearnISL: React.FC = () => {
 
                       <button
                         onClick={handleNextQuestion}
-                        className="w-full bg-slate-900 hover:bg-slate-800 text-white py-3 rounded-xl text-xs font-bold transition shadow-sm"
+                        className="w-full bg-slate-900 dark:bg-sky-600 hover:bg-slate-800 dark:hover:bg-sky-500 text-white py-3 rounded-xl text-xs font-bold transition shadow-sm cursor-pointer active:scale-95"
                       >
                         {currentQuizIdx < QUIZ_QUESTIONS.length - 1 ? 'Next Question →' : 'View Final Score'}
                       </button>
@@ -240,18 +240,18 @@ export const LearnISL: React.FC = () => {
               ) : (
                 /* Quiz Finished Card */
                 <div className="text-center py-8 space-y-4">
-                  <div className="w-16 h-16 rounded-3xl bg-amber-100 text-amber-600 flex items-center justify-center mx-auto shadow-md">
+                  <div className="w-16 h-16 rounded-3xl bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center mx-auto shadow-md">
                     <Trophy className="w-8 h-8" />
                   </div>
-                  <h3 className="text-xl font-extrabold text-slate-900">
+                  <h3 className="text-xl font-extrabold text-slate-900 dark:text-white">
                     Quiz Completed!
                   </h3>
-                  <p className="text-sm text-slate-600">
-                    You scored <span className="font-black text-slate-950">{score}</span> out of <span className="font-black text-slate-950">{QUIZ_QUESTIONS.length}</span>!
+                  <p className="text-sm text-slate-600 dark:text-slate-400">
+                    You scored <span className="font-black text-slate-950 dark:text-white">{score}</span> out of <span className="font-black text-slate-950 dark:text-white">{QUIZ_QUESTIONS.length}</span>!
                   </p>
                   <button
                     onClick={handleRestartQuiz}
-                    className="inline-flex items-center gap-2 bg-sky-600 hover:bg-sky-500 text-white px-6 py-2.5 rounded-xl text-xs font-bold transition shadow-sm"
+                    className="inline-flex items-center gap-2 bg-sky-600 hover:bg-sky-500 text-white px-6 py-2.5 rounded-xl text-xs font-bold transition shadow-sm cursor-pointer active:scale-95"
                   >
                     <RotateCcw className="w-4 h-4" />
                     <span>Try Again</span>
@@ -264,10 +264,10 @@ export const LearnISL: React.FC = () => {
           {activeCategory === 'alphabet' && (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <h3 className="text-sm font-extrabold text-slate-900 uppercase tracking-wide">
+                <h3 className="text-sm font-extrabold text-slate-900 dark:text-white uppercase tracking-wide">
                   ISL Fingerspelling Handshapes
                 </h3>
-                <span className="text-xs text-slate-500">
+                <span className="text-xs text-slate-500 dark:text-slate-400">
                   Select a letter to demonstrate
                 </span>
               </div>
@@ -281,12 +281,12 @@ export const LearnISL: React.FC = () => {
                         { gloss: `LETTER-${item.letter}`, meaning: `Fingerspelling: ${item.letter}`, durationSec: 1.2 },
                       ]);
                     }}
-                    className="p-3 text-left rounded-2xl bg-slate-50 hover:bg-sky-50 border border-slate-200 hover:border-sky-300 transition-all group"
+                    className="p-3 text-left rounded-2xl bg-slate-50 dark:bg-slate-800/60 hover:bg-sky-50 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700/60 hover:border-sky-300 dark:hover:border-sky-700/50 transition-all group cursor-pointer active:scale-95"
                   >
-                    <span className="text-lg font-black text-slate-900 group-hover:text-sky-600 block">
+                    <span className="text-lg font-black text-slate-900 dark:text-slate-100 group-hover:text-sky-600 dark:group-hover:text-sky-400 block">
                       {item.letter}
                     </span>
-                    <p className="text-[11px] text-slate-500 line-clamp-2 mt-0.5">
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-2 mt-0.5">
                       {item.handshape}
                     </p>
                   </button>

@@ -1,17 +1,17 @@
 import React from 'react';
 import { 
-  Ear, 
-  HandMetal, 
+  Sparkles,
+  Camera, 
   MessageSquareText, 
   FileText, 
   AlertTriangle, 
   GraduationCap, 
-  Camera, 
-  User, 
-  Activity,
-  Sparkles
+  HandMetal,
+  Sun,
+  Moon
 } from 'lucide-react';
 import { UserProfile } from '../types';
+import { useTheme } from '../context/ThemeContext';
 
 export type ActiveTab = 'translate' | 'vision' | 'dialogue' | 'documents' | 'emergency' | 'learn';
 
@@ -21,7 +21,6 @@ interface NavbarProps {
   currentUser: UserProfile;
   onOpenProfile: () => void;
   onQuickSOS: () => void;
-  serverHealth: { status: string; hasApiKey: boolean } | null;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -30,63 +29,62 @@ export const Navbar: React.FC<NavbarProps> = ({
   currentUser,
   onOpenProfile,
   onQuickSOS,
-  serverHealth,
 }) => {
-  const navItems: { id: ActiveTab; label: string; icon: React.ReactNode; badge?: string }[] = [
-    { id: 'translate', label: 'Universal Translate', icon: <Sparkles className="w-4 h-4" /> },
-    { id: 'vision', label: 'Sign Vision AI', icon: <Camera className="w-4 h-4" />, badge: 'LIVE' },
-    { id: 'dialogue', label: 'Two-Way Dialogue', icon: <MessageSquareText className="w-4 h-4" /> },
-    { id: 'documents', label: 'Accessible Docs', icon: <FileText className="w-4 h-4" /> },
+  const { isDark, toggleTheme } = useTheme();
+
+  const navItems: { id: ActiveTab; label: string; icon: React.ReactNode }[] = [
+    { id: 'translate', label: 'Translator', icon: <Sparkles className="w-4 h-4" /> },
+    { id: 'vision', label: 'Sign Vision', icon: <Camera className="w-4 h-4" /> },
+    { id: 'dialogue', label: 'Dialogue', icon: <MessageSquareText className="w-4 h-4" /> },
+    { id: 'documents', label: 'Documents', icon: <FileText className="w-4 h-4" /> },
     { id: 'emergency', label: 'Emergency SOS', icon: <AlertTriangle className="w-4 h-4" /> },
     { id: 'learn', label: 'Learn ISL', icon: <GraduationCap className="w-4 h-4" /> },
   ];
 
   return (
-    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-xs">
+    <header className="sticky top-0 z-40 bg-white/90 dark:bg-slate-950/90 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/90 transition-colors duration-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 gap-4">
           
-          {/* Logo & Brand */}
-          <div className="flex items-center gap-3 cursor-pointer" onClick={() => setActiveTab('translate')}>
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-sky-500/20">
-              <HandMetal className="w-6 h-6" />
+          {/* Logo & Brand Title */}
+          <div 
+            className="flex items-center gap-2.5 cursor-pointer select-none group" 
+            onClick={() => setActiveTab('translate')}
+          >
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-sky-500 via-sky-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-sky-500/25 group-hover:scale-105 transition-transform">
+              <HandMetal className="w-5 h-5" />
             </div>
             <div>
-              <div className="flex items-center gap-2">
-                <span className="font-extrabold text-lg sm:text-xl text-slate-900 tracking-tight">
+              <div className="flex items-center gap-1.5">
+                <span className="font-black text-lg text-slate-900 dark:text-white tracking-tight leading-tight">
                   We Hear You
                 </span>
-                <span className="hidden md:inline-flex items-center text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-sky-100 text-sky-700 border border-sky-200">
+                <span className="text-[10px] uppercase font-bold tracking-widest px-1.5 py-0.5 rounded bg-sky-500/10 dark:bg-sky-400/20 text-sky-600 dark:text-sky-300 border border-sky-500/20">
                   ISL AI
                 </span>
               </div>
-              <p className="text-[11px] text-slate-500 hidden sm:block">
-                Universal Accessibility & Sign Language Platform
-              </p>
+              <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium block leading-none">
+                Accessibility Platform
+              </span>
             </div>
           </div>
 
-          {/* Navigation Bar for Desktop */}
-          <nav className="hidden lg:flex items-center gap-1 bg-slate-100/80 p-1 rounded-xl border border-slate-200/80">
+          {/* Desktop Navigation Bar */}
+          <nav className="hidden lg:flex items-center gap-1 bg-slate-100/90 dark:bg-slate-900/90 p-1.5 rounded-2xl border border-slate-200/80 dark:border-slate-800 transition-colors">
             {navItems.map((item) => {
               const isActive = activeTab === item.id;
               return (
                 <button
                   key={item.id}
                   onClick={() => setActiveTab(item.id)}
-                  className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                  className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                     isActive
-                      ? 'bg-white text-sky-700 shadow-xs border border-slate-200/60'
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
+                      ? 'bg-white dark:bg-slate-800 text-sky-600 dark:text-sky-400 shadow-xs border border-slate-200/50 dark:border-slate-700/60'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-slate-800/50'
                   }`}
                 >
                   {item.icon}
                   <span>{item.label}</span>
-                  {item.badge && (
-                    <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-emerald-500 text-white tracking-wide">
-                      {item.badge}
-                    </span>
-                  )}
                 </button>
               );
             })}
@@ -94,36 +92,40 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           {/* Right Action Tools */}
           <div className="flex items-center gap-2">
-            {/* Server Status Pill */}
-            <div 
-              className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 border border-slate-200 text-slate-700"
-              title={serverHealth ? `Server: ${serverHealth.status}, AI Key: ${serverHealth.hasApiKey ? 'Configured' : 'Local Fallback'}` : 'Connecting...'}
+            
+            {/* Theme Toggle (Dark / Light) */}
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-xl text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 border border-slate-200/80 dark:border-slate-800 transition shadow-xs cursor-pointer"
+              title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+              aria-label="Toggle dark mode"
             >
-              <span className={`w-2 h-2 rounded-full ${serverHealth?.status === 'ok' ? 'bg-emerald-500' : 'bg-amber-500'} animate-pulse`} />
-              <span className="text-[11px]">
-                {serverHealth?.hasApiKey ? 'Gemini AI Active' : 'Semantic ISL Mode'}
-              </span>
-            </div>
+              {isDark ? (
+                <Sun className="w-4 h-4 text-amber-400 animate-spin-slow" />
+              ) : (
+                <Moon className="w-4 h-4 text-slate-700" />
+              )}
+            </button>
 
             {/* Quick SOS Button */}
             <button
               onClick={onQuickSOS}
-              className="flex items-center gap-1.5 bg-rose-600 hover:bg-rose-700 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition shadow-sm shadow-rose-600/20 active:scale-95"
+              className="flex items-center gap-1.5 bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition shadow-sm shadow-rose-500/20 active:scale-95 cursor-pointer"
               title="One-Tap Emergency Assistance"
             >
-              <AlertTriangle className="w-3.5 h-3.5" />
-              <span className="hidden xs:inline">SOS</span>
+              <AlertTriangle className="w-3.5 h-3.5 animate-pulse" />
+              <span>SOS</span>
             </button>
 
             {/* Profile Avatar Pill */}
             <button
               onClick={onOpenProfile}
-              className="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-800 p-1.5 sm:px-3 sm:py-1.5 rounded-xl border border-slate-200 text-xs font-semibold transition"
+              className="flex items-center gap-2 bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 p-1.5 sm:px-3 sm:py-1.5 rounded-xl border border-slate-200/80 dark:border-slate-800 text-xs font-bold transition cursor-pointer"
             >
-              <div className="w-6 h-6 rounded-full bg-sky-600 text-white text-[11px] font-bold flex items-center justify-center">
+              <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-sky-600 to-indigo-600 text-white text-[11px] font-bold flex items-center justify-center shadow-xs">
                 {currentUser.avatarInitials}
               </div>
-              <span className="hidden md:inline truncate max-w-[100px]">
+              <span className="hidden sm:inline truncate max-w-[100px]">
                 {currentUser.name}
               </span>
             </button>
@@ -132,18 +134,18 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
       </div>
 
-      {/* Mobile Horizontal Navigation Tabs */}
-      <div className="lg:hidden flex items-center gap-1 overflow-x-auto px-3 py-2 border-t border-slate-200/60 bg-slate-50">
+      {/* Mobile Horizontal Navigation Bar */}
+      <div className="lg:hidden flex items-center gap-1 overflow-x-auto px-3 py-2 border-t border-slate-200/60 dark:border-slate-800/90 bg-slate-50/90 dark:bg-slate-950/90 scrollbar-none">
         {navItems.map((item) => {
           const isActive = activeTab === item.id;
           return (
             <button
               key={item.id}
               onClick={() => setActiveTab(item.id)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
                 isActive
                   ? 'bg-sky-600 text-white shadow-xs'
-                  : 'text-slate-600 hover:bg-slate-200/60'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white bg-slate-200/60 dark:bg-slate-900'
               }`}
             >
               {item.icon}

@@ -2,14 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { 
   X, 
   User, 
-  Settings, 
-  Database, 
+  Palette, 
   History, 
   Check, 
-  RefreshCw, 
-  Sparkles,
-  ShieldCheck,
-  Palette
+  Clock
 } from 'lucide-react';
 import { UserProfile } from '../types';
 
@@ -26,16 +22,12 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
   currentUser,
   onUpdateUser,
 }) => {
-  const [activeTab, setActiveTab] = useState<'profile' | 'avatar' | 'database' | 'history'>('profile');
+  const [activeTab, setActiveTab] = useState<'profile' | 'avatar' | 'history'>('profile');
   const [name, setName] = useState<string>(currentUser.name);
   const [role, setRole] = useState(currentUser.role);
   const [signingSpeed, setSigningSpeed] = useState<number>(currentUser.avatarCustomization?.signingSpeed || 1);
+  const [avatarModel, setAvatarModel] = useState<string>(currentUser.avatarCustomization?.avatarModel || 'readyplayer_me');
   const [shirtColor, setShirtColor] = useState<string>(currentUser.avatarCustomization?.shirtColor || '#0284c7');
-  
-  // Database status
-  const [supabaseConfig, setSupabaseConfig] = useState<{ configured: boolean; source: string; url?: string } | null>(null);
-  const [testingDb, setTestingDb] = useState<boolean>(false);
-  const [testResult, setTestResult] = useState<string | null>(null);
   
   // History items
   const [historyItems, setHistoryItems] = useState<any[]>([]);
@@ -43,12 +35,6 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
 
   useEffect(() => {
     if (!isOpen) return;
-
-    // Fetch Supabase configuration status
-    fetch('/api/supabase/config')
-      .then((res) => res.json())
-      .then((data) => setSupabaseConfig(data))
-      .catch(() => {});
 
     // Fetch user history
     setLoadingHistory(true);
@@ -79,6 +65,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
       avatarCustomization: {
         ...currentUser.avatarCustomization,
         signingSpeed,
+        avatarModel,
         shirtColor,
       },
     };
@@ -89,78 +76,55 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
       await fetch('/api/user/avatar-customization', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ signingSpeed, shirtColor }),
+        body: JSON.stringify({ signingSpeed, avatarModel, shirtColor }),
       });
     } catch (e) {}
 
     onClose();
   };
 
-  const handleTestDatabase = async () => {
-    setTestingDb(true);
-    setTestResult(null);
-    try {
-      const res = await fetch('/api/supabase/test', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({}),
-      });
-      const data = await res.json();
-      if (data.success) {
-        setTestResult('Successfully connected to Supabase live database!');
-      } else {
-        setTestResult(data.message || 'Supabase credentials are not connected yet. Operating in reliable local memory mode.');
-      }
-    } catch (e: any) {
-      setTestResult('Database test completed. Local in-memory store active.');
-    } finally {
-      setTestingDb(false);
-    }
-  };
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs">
-      <div className="bg-white rounded-3xl w-full max-w-2xl overflow-hidden shadow-2xl border border-slate-200 flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs">
+      <div className="bg-white dark:bg-slate-900 rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl border border-slate-200/80 dark:border-slate-800 flex flex-col max-h-[85vh] transition-colors">
         
         {/* Modal Header */}
-        <div className="p-6 border-b border-slate-100 flex items-center justify-between">
+        <div className="p-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-sky-100 text-sky-700 flex items-center justify-center font-black">
+            <div className="w-10 h-10 rounded-2xl bg-sky-100 dark:bg-sky-950/60 text-sky-700 dark:text-sky-400 flex items-center justify-center font-black">
               {currentUser.avatarInitials}
             </div>
             <div>
-              <h2 className="text-base font-extrabold text-slate-900">
-                User Settings & Preferences
+              <h2 className="text-base font-black text-slate-900 dark:text-white">
+                User Settings
               </h2>
-              <p className="text-xs text-slate-500">
-                Configure accessibility profile, 3D avatar, and database synchronization.
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Accessibility and avatar preferences
               </p>
             </div>
           </div>
 
           <button
             onClick={onClose}
-            className="p-2 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition"
+            className="p-2 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Modal Tab Bar */}
-        <div className="flex items-center gap-2 px-6 pt-3 border-b border-slate-100 bg-slate-50/50">
+        {/* Clean Modal Tab Bar */}
+        <div className="flex items-center gap-2 px-5 pt-3 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40">
           {[
-            { id: 'profile', label: 'Accessibility Profile', icon: <User className="w-3.5 h-3.5" /> },
+            { id: 'profile', label: 'Profile', icon: <User className="w-3.5 h-3.5" /> },
             { id: 'avatar', label: '3D Avatar', icon: <Palette className="w-3.5 h-3.5" /> },
-            { id: 'database', label: 'Cloud Database', icon: <Database className="w-3.5 h-3.5" /> },
-            { id: 'history', label: 'Activity Logs', icon: <History className="w-3.5 h-3.5" /> },
+            { id: 'history', label: 'History', icon: <History className="w-3.5 h-3.5" /> },
           ].map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`flex items-center gap-1.5 pb-3 px-2 text-xs font-bold border-b-2 transition ${
+              className={`flex items-center gap-1.5 pb-2.5 px-2 text-xs font-bold border-b-2 transition cursor-pointer ${
                 activeTab === tab.id
-                  ? 'border-sky-600 text-sky-600'
-                  : 'border-transparent text-slate-500 hover:text-slate-800'
+                  ? 'border-sky-600 text-sky-600 dark:text-sky-400'
+                  : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
               }`}
             >
               {tab.icon}
@@ -170,42 +134,37 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
         </div>
 
         {/* Modal Body */}
-        <div className="p-6 overflow-y-auto space-y-4 flex-1">
+        <div className="p-5 overflow-y-auto space-y-4 flex-1">
           
           {activeTab === 'profile' && (
             <div className="space-y-4">
               <div>
-                <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wide block mb-1">
-                  Full Name
+                <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
+                  Your Name
                 </label>
                 <input
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full text-xs sm:text-sm p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-sky-500 focus:bg-white text-slate-900"
+                  className="w-full text-sm p-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-sky-500 focus:bg-white dark:focus:bg-slate-950 text-slate-900 dark:text-white"
                 />
               </div>
 
               <div>
-                <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wide block mb-1">
-                  Primary Community Role
+                <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
+                  Community Role
                 </label>
                 <select
                   value={role}
                   onChange={(e) => setRole(e.target.value as any)}
-                  className="w-full text-xs sm:text-sm p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-sky-500 focus:bg-white text-slate-900"
+                  className="w-full text-sm p-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-sky-500 focus:bg-white dark:focus:bg-slate-950 text-slate-900 dark:text-white"
                 >
-                  <option value="deaf_individual">Deaf Individual (ISL Primary)</option>
+                  <option value="deaf_individual">Deaf Individual</option>
                   <option value="hard_of_hearing">Hard of Hearing</option>
-                  <option value="hearing_ally">Hearing Ally / Family Member</option>
-                  <option value="interpreter">Certified ISL Interpreter</option>
-                  <option value="educator">Special Educator / Researcher</option>
+                  <option value="hearing_ally">Hearing Ally</option>
+                  <option value="interpreter">ISL Interpreter</option>
+                  <option value="educator">Special Educator</option>
                 </select>
-              </div>
-
-              <div className="bg-sky-50 p-4 rounded-2xl border border-sky-100 text-xs text-sky-950">
-                <span className="font-bold block mb-1">Accessibility Tip:</span>
-                Selecting your role helps the AI personalize ISL gloss vocabulary, Non-Manual Marker intensity, and two-way speech synthesis.
               </div>
             </div>
           )}
@@ -213,11 +172,34 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
           {activeTab === 'avatar' && (
             <div className="space-y-4">
               <div>
+                <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-2">
+                  3D Sign Avatar Model
+                </label>
+                <div className="p-3.5 rounded-2xl border border-sky-500 bg-sky-50/70 dark:bg-sky-950/50 ring-2 ring-sky-500/20 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-sky-600 text-white flex items-center justify-center font-black text-sm">
+                      3D
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-xs font-black text-slate-900 dark:text-white">Avatar</span>
+                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-sky-200/70 dark:bg-sky-900/60 text-sky-800 dark:text-sky-300">Active</span>
+                      </div>
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                        Photorealistic 3D Humanoid with skeletal Indian Sign Language (ISL) articulation
+                      </p>
+                    </div>
+                  </div>
+                  <Check className="w-4 h-4 text-sky-600 dark:text-sky-400 shrink-0" />
+                </div>
+              </div>
+
+              <div>
                 <div className="flex items-center justify-between mb-1">
-                  <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wide">
-                    Default Signing Speed
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                    Signing Animation Speed
                   </label>
-                  <span className="text-xs font-bold text-sky-600">{signingSpeed}x</span>
+                  <span className="text-xs font-bold text-sky-600 dark:text-sky-400">{signingSpeed}x</span>
                 </div>
                 <input
                   type="range"
@@ -226,105 +208,42 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                   step="0.25"
                   value={signingSpeed}
                   onChange={(e) => setSigningSpeed(parseFloat(e.target.value))}
-                  className="w-full accent-sky-600"
+                  className="w-full accent-sky-600 cursor-pointer"
                 />
-                <div className="flex justify-between text-[10px] text-slate-400 mt-1">
-                  <span>0.5x (Slow practice)</span>
-                  <span>1.0x (Standard)</span>
-                  <span>1.5x (Fluent)</span>
+                <div className="flex justify-between text-[10px] text-slate-400 dark:text-slate-500 mt-1">
+                  <span>0.5x Slow</span>
+                  <span>1.0x Normal</span>
+                  <span>1.5x Fluent</span>
                 </div>
               </div>
-
-              <div>
-                <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wide block mb-2">
-                  Avatar Shirt Color
-                </label>
-                <div className="flex items-center gap-3">
-                  {['#0284c7', '#4f46e5', '#059669', '#dc2626', '#d97706', '#475569'].map((c) => (
-                    <button
-                      key={c}
-                      onClick={() => setShirtColor(c)}
-                      className={`w-8 h-8 rounded-full border-2 transition ${
-                        shirtColor === c ? 'ring-2 ring-sky-500 scale-110' : 'border-transparent'
-                      }`}
-                      style={{ backgroundColor: c }}
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'database' && (
-            <div className="space-y-4">
-              <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-extrabold text-slate-800 uppercase tracking-wide">
-                    Supabase Database Status
-                  </span>
-                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                    supabaseConfig?.configured ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-200 text-slate-700'
-                  }`}>
-                    {supabaseConfig?.configured ? 'Cloud Configured' : 'In-Memory Store Active'}
-                  </span>
-                </div>
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  The backend has an integrated persistence layer that stores translations, emergency SOS dispatches, and user settings seamlessly in memory, with optional Supabase cloud synchronization.
-                </p>
-              </div>
-
-              <button
-                onClick={handleTestDatabase}
-                disabled={testingDb}
-                className="flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white px-4 py-2.5 rounded-xl text-xs font-bold transition shadow-sm"
-              >
-                {testingDb ? (
-                  <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                ) : (
-                  <Database className="w-3.5 h-3.5" />
-                )}
-                <span>Run Persistence Diagnostic</span>
-              </button>
-
-              {testResult && (
-                <div className="p-3 bg-slate-100 rounded-xl text-xs font-medium text-slate-800 border border-slate-200">
-                  {testResult}
-                </div>
-              )}
             </div>
           )}
 
           {activeTab === 'history' && (
             <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-extrabold text-slate-800 uppercase tracking-wide">
-                  Recent Saved Sessions ({historyItems.length})
-                </span>
-              </div>
-
               {loadingHistory ? (
-                <div className="text-center py-6 text-xs text-slate-400">Loading logs...</div>
+                <div className="text-center py-6 text-xs text-slate-400">Loading history...</div>
               ) : historyItems.length === 0 ? (
                 <div className="text-center py-6 text-xs text-slate-400">
-                  No activity saved yet. Use the Universal Translator or Emergency SOS to record logs.
+                  No translation history recorded yet.
                 </div>
               ) : (
-                <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
+                <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
                   {historyItems.map((item, idx) => (
                     <div
                       key={item.id || idx}
-                      className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs flex flex-col gap-1"
+                      className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 text-xs flex flex-col gap-1"
                     >
                       <div className="flex items-center justify-between">
-                        <span className="font-extrabold text-slate-900">
-                          {item.original_text || item.title || 'Session Activity'}
+                        <span className="font-bold text-slate-900 dark:text-slate-100 truncate max-w-[240px]">
+                          {item.original_text || item.title || 'Translation'}
                         </span>
-                        <span className="text-[10px] text-slate-400 font-mono">
-                          {new Date(item.created_at || Date.now()).toLocaleTimeString()}
+                        <span className="text-[10px] text-slate-400 dark:text-slate-500 font-mono">
+                          {new Date(item.created_at || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                         </span>
                       </div>
                       {item.isl_gloss && (
-                        <span className="font-mono text-[11px] text-sky-700 bg-sky-50 px-2 py-0.5 rounded w-fit">
+                        <span className="font-mono text-[11px] font-bold text-sky-700 dark:text-sky-300 bg-sky-50 dark:bg-sky-950/60 border border-sky-100 dark:border-sky-900/40 px-2 py-0.5 rounded w-fit">
                           ISL: {item.isl_gloss}
                         </span>
                       )}
@@ -338,19 +257,19 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
         </div>
 
         {/* Modal Footer */}
-        <div className="p-4 border-t border-slate-100 bg-slate-50 flex items-center justify-end gap-2">
+        <div className="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/60 flex items-center justify-end gap-2">
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-200 transition"
+            className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition cursor-pointer"
           >
             Cancel
           </button>
           <button
             onClick={handleSaveProfile}
-            className="flex items-center gap-1.5 bg-sky-600 hover:bg-sky-500 text-white px-5 py-2 rounded-xl text-xs font-bold transition shadow-sm"
+            className="flex items-center gap-1.5 bg-sky-600 hover:bg-sky-500 text-white px-5 py-2 rounded-xl text-xs font-bold transition shadow-sm cursor-pointer active:scale-95"
           >
             <Check className="w-3.5 h-3.5" />
-            <span>Save Changes</span>
+            <span>Save</span>
           </button>
         </div>
 
