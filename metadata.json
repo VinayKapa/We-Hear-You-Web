@@ -1,0 +1,7 @@
+{
+  "name": "We Hear You",
+  "description": "AI-Powered Universal ISL Accessibility & Communication Platform for Deaf and Hard-of-Hearing Users.",
+  "requestFramePermissions": ["camera", "microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+
